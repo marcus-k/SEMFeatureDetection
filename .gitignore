@@ -100,3 +100,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Generated image and data files
+*_edited.*
+*_ml.*
+*_nobanner.*
+*_pre.*
+*_res.*
