@@ -1,0 +1,19 @@
+{
+    "python.analysis.extraPaths": [
+        "./code",
+        "./code/preprocess",
+        "./code/methods"
+    ],
+    "cSpell.words": [
+        "AAMED",
+        "gdstk",
+        "imread",
+        "imshow",
+        "imwrite",
+        "nanobeam",
+        "ndarray",
+        "Otsu's",
+        "thresholding",
+        "tifffile"
+    ]
+}
