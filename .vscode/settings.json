@@ -1,8 +1,8 @@
 {
     "python.analysis.extraPaths": [
-        "./code",
-        "./code/preprocess",
-        "./code/methods"
+        "./ellipsefinder",
+        "./ellipsefinder/preprocess",
+        "./ellipsefinder/methods"
     ],
     "cSpell.words": [
         "AAMED",
