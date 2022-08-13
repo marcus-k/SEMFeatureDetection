@@ -1,5 +1,4 @@
 from operator import attrgetter
-from sys import meta_path
 import pandas as pd
 import argparse
 from pathlib import Path
