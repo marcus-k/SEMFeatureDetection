@@ -23,12 +23,14 @@ The Anaconda version of Python was used and tested in this work. Instruction for
 will be given. If needed, first create a new environment with the desired Python 
 version. Versions 3.8-3.10 have been tested.
 ```
-$ conda create -n ellipse python=3.8
+conda create -n ellipse python=3.8
 ``` 
 Next, install the required packages
 ```
-$ conda install -n ellipse opencv=4.5.5 numpy pandas matplotlib tifffile ipykernel
+conda install -n ellipse opencv=4.5.5 numpy pandas matplotlib tifffile ipykernel ipyml
 ```
+This assumes Jupyter Notebooks/Lab is already installed (which it is the default
+Anaconda setup).
 
 OpenCV version 4.5.5 is specified since the provided AAMED binaries were compiled with
 this version. Other mismatched versions may work, but to be sure, it is best to compile
