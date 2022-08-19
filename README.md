@@ -1,6 +1,7 @@
-# SEM Ellipse Finder
-Collection of work aiming to detect ellipses in SEM images. This work was done in a summer
-research project from May 2022 to August 2022 under the supervision of Dr. Paul Barclay.
+# SEM Feature Detection
+Collection of work aiming to detect various features in SEM images of nanobeam photonic 
+crystals, notable the hole sizes and beam width. This work was done in a summer research 
+project from May 2022 to August 2022 under the supervision of Dr. Paul Barclay.
 
 This will mainly be an archival tool of the progress I make on this. Commits will mainly
 be various updates as I understand and discover different things. 
