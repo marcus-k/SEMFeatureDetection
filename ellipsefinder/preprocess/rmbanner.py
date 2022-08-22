@@ -46,7 +46,7 @@ def remove_banner(
         Kernel size for the erosion and dilation, after adding the vertical and
         horizontally eroded and dilated images together. The default is 5.
         Larger values may increase the chance that the largest connected component
-        is the banner, but it may also artificially increase the width of the banner.
+        is the banner, but it may also artificially increase the height of the banner.
 
     alpha : float, optional
         The fractional mix of the vertical and horizontal lines in the adding step. 
