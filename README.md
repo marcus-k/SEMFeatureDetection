@@ -27,9 +27,9 @@ conda create -n ellipse python=3.8
 ``` 
 Next, install the required packages
 ```
-conda install -n ellipse opencv=4.5.5 numpy pandas matplotlib tifffile ipykernel ipyml
+conda install -n ellipse opencv=4.5.5 numpy pandas matplotlib tifffile ipykernel ipympl
 ```
-This assumes Jupyter Notebooks/Lab is already installed (which it is the default
+This assumes Jupyter Notebooks/Lab is already installed (which it is in the default
 Anaconda setup).
 
 OpenCV version 4.5.5 is specified since the provided AAMED binaries were compiled with
