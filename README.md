@@ -85,6 +85,8 @@ using `./ellipsefinder/format_roi_csv.py` with the CSV data is probably better.
 
 ## Development
 
+### Future Methods
+
 I tried to make adding new future methods relatively easy. All the current ellipse
 finder algorithms implement the abstract base class (ABC) `finder.py` which has the 
 various functions needed to get going. Bare minimum, the two abstract methods 
@@ -103,3 +105,13 @@ of the ellipse with the commonplace counterclockwise positive direction starting
 the x-axis. In the OpenCV methods I have used, it adapts a clockwise positive direction
 starting from the x-axis as its standard. This is something to keep in mind when
 creating the `extract()` function and storing results.
+
+### Removing Banners
+
+Removing the banners was an unexpected important step for the algorithms to succeed
+more. Seen in [rmbanner.py](./ellipsefinder/preprocess/rmbanner.py), the current method
+builds on [this one](https://github.com/lwang94/sem_size_analysis/blob/803251cdcab3d8304a365df9ac5879fcd9346270/experiments/3_Label_Data.ipynb)
+adding a connected components analysis. At the moment, it is assumed that the banner
+is at the bottom of the image and I simply crop the height of the largest connected
+component off the bottom. For the data I had, this was sufficient but this may need
+to change for banners in different locations.
