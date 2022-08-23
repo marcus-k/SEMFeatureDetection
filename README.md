@@ -40,11 +40,11 @@ section for details.
 ### Installing AAMED
 
 In order to use the AAMED algorithm, the AAMED binaries should be downloaded and placed 
-into the `./ellipsefinder/methods` folder. The binaries are provided for AAMED in the 
-releases section on the right side. Provided are versions for the Anaconda distribution 
-of Python 3.8-3.10 for Windows and Linux compiled for OpenCV 4.5.5. The system 
-distribution in Linux should also work. For other distributions, one will need to build 
-the AAMED binary themselves. 
+into the [`./ellipsefinder/methods`](./ellipsefinder/methods/) folder. The binaries are 
+provided for AAMED in the releases section on the right side. Provided are versions for 
+the Anaconda distribution of Python 3.8-3.10 for Windows and Linux compiled for OpenCV 
+4.5.5. The system distribution in Linux should also work. For other distributions, one 
+will need to build the AAMED binary themselves. 
 
 Cython and a C++ compiler are needed for building. See the 
 [AAMED GitHub page](https://github.com/Li-Zhaoxi/AAMED) for building details.
@@ -54,10 +54,12 @@ be shown, but the code can be used normally without access to the AAMED algorith
 
 ## Usage
 
-The main code is in `./ellipsefinder` and it consists of the main `find_ellipses.py`
-file and the `methods` folder. In the `find_ellipses.py` file is all the functions
-wrapping the functionality of the various ellipse finding algorithms in the `methods`
-folder.
+The main code is in [`./ellipsefinder`](./ellipsefinder/) and it consists of the main 
+[`find_ellipses.py`](./ellipsefinder/find_ellipses.py) file and the 
+[`methods`](./ellipsefinder/methods/) folder. In the 
+[`find_ellipses.py`](./ellipsefinder/find_ellipses.py) file is all the functions 
+wrapping the functionality of the various ellipse finding algorithms in the 
+[`methods`](./ellipsefinder/methods/) folder.
 
 Most of the testing of the algorithms I did with the Jupyter notebooks in 
 [`./notebooks`](./notebooks/). It is a bit unorganized, but examples of using 
@@ -81,20 +83,22 @@ selection regions of interest (ROIs) and masks, see the
 Three files are created from this method: the ground truth mask, the ROI zip file, and 
 the CSV file of the selection regions. I tested out both extraction the ellipses from 
 the mask and creating the ellipse from the CSV selection region data. Both are okay, 
-using `./ellipsefinder/format_roi_csv.py` with the CSV data is probably better.
+using [`./ellipsefinder/format_roi_csv.py`](./ellipsefinder/format_roi_csv.py) with the 
+CSV data is probably better.
 
 ## Development
 
 ### Future Methods
 
 I tried to make adding new future methods relatively easy. All the current ellipse
-finder algorithms implement the abstract base class (ABC) `finder.py` which has the 
-various functions needed to get going. Bare minimum, the two abstract methods 
-`preprocess()` and `extract()` should be implemented. `preprocess()`, if needed, should 
-return a preprocessed image ready for the extraction process to start. `extract()` 
-should actually implement the extraction process and return the DataFrame with the found
-ellipses' details. Is this the best way to organize this process? I don't know, but I
-thought it worked well for me.
+finder algorithms implement the abstract base class (ABC) 
+[`finder.py`](./ellipsefinder/methods/finder.py) which has the various functions needed 
+to get going. Bare minimum, the two abstract methods `preprocess()` and `extract()` 
+should be implemented. `preprocess()`, if needed, should return a preprocessed image 
+ready for the extraction process to start. `extract()` should actually implement the 
+extraction process and return the DataFrame with the found ellipses' details. Is this 
+the best way to organize this process? I don't know, but I thought it worked well for 
+me.
 
 The ABC also has a few convenience functions that can be utilized when creating a new
 extraction method, as well as a default function to plot the found ellipses onto the
@@ -109,7 +113,7 @@ creating the `extract()` function and storing results.
 ### Removing Banners
 
 Removing the banners was an unexpected important step for the algorithms to succeed
-more. Seen in [rmbanner.py](./ellipsefinder/preprocess/rmbanner.py), the current method
+more. Seen in [`rmbanner.py`](./ellipsefinder/preprocess/rmbanner.py), the current method
 builds on [this one](https://github.com/lwang94/sem_size_analysis/blob/803251cdcab3d8304a365df9ac5879fcd9346270/experiments/3_Label_Data.ipynb)
 adding a connected components analysis. At the moment, it is assumed that the banner
 is at the bottom of the image and I simply crop the height of the largest connected
