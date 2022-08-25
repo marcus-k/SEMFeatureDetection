@@ -109,3 +109,4 @@ venv.bak/
 *_res.*
 *_res-inner.*
 *_res-outer.*
+*_widths.*

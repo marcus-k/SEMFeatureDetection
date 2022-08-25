@@ -6,13 +6,14 @@ sys.path.insert(
 )
 
 from preprocess.rmbanner import remove_banner
-from find_ellipses import get_pixel_size, save_result
+from find_ellipses import get_pixel_size
 
 import cv2
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import widgets
-from typing import List, Dict, Tuple
+from typing import Dict, Tuple, Union, Sequence, TypeVar
 from itertools import combinations
 from pprint import pprint
 
@@ -237,7 +238,8 @@ def fine_tune_lines(
     return final_m, final_b
 
 
-def find_distances(m: np.ndarray, b: np.ndarray) -> Dict[Tuple[int, int], float]:
+
+def find_distances(m: np.ndarray, b: np.ndarray) -> pd.DataFrame:
     """
     Find the distance between each line and each other line.
 
@@ -251,7 +253,22 @@ def find_distances(m: np.ndarray, b: np.ndarray) -> Dict[Tuple[int, int], float]
     for (i, j) in combinations(range(len(b)), 2): 
         distances[(i, j)] = abs(b[i] - b[j]) / np.sqrt(1 + m**2)
 
-    return distances
+    # Convert the dictionary to a pandas dataframe
+    df = pd.DataFrame()
+    df["Line #1"] = [i[0] for i in distances.keys()]
+    df["Line #2"] = [i[1] for i in distances.keys()]
+    df["Distance (px)"] = list(distances.values())
+
+    return df
+
+
+def save_distances(filename: str, distances: pd.DataFrame, suffix: str) -> None:
+    """
+    Save the lines to a file.
+
+    """
+    name = str(Path(filename).with_suffix("")) + f"{suffix}.csv"
+    distances.to_csv(name, index=False)
 
 
 def main():
@@ -271,9 +288,17 @@ def main():
     group_m, group_b = group_lines(m_inliers, b_inliers)
     tuned_m, tuned_b = fine_tune_lines(group_m, group_b, no_banner)
 
+    # Find the distances between each line and each other line
     distances = find_distances(tuned_m, tuned_b)
 
-    pprint(distances)
+    # Scale the distances by the metadata scale value
+    scale = get_pixel_size(filename, ".txt")
+    distances["Distance (nm)"] = distances["Distance (px)"] * scale
+
+    # Save the lines to a file
+    save_distances(filename, distances, "_widths")
+    print(distances)
+
 
 if __name__ == "__main__":
     main()
