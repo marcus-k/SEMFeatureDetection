@@ -13,12 +13,16 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import widgets
-from typing import Dict, Tuple, Union, Sequence, TypeVar
+from typing import Tuple
 from itertools import combinations
-from pprint import pprint
 
 
-def get_lines(img: np.ndarray, return_pre: bool = False, return_edges: bool = False):
+def get_lines(
+    img: np.ndarray, 
+    dir: str = "horizontal", 
+    return_pre: bool = False, 
+    return_edges: bool = False
+) -> Tuple[np.ndarray, ...]:
     """
     Find long straight lines in an image. Ideally, this will be the edges that define
     the nanobeam.
@@ -115,7 +119,7 @@ def remove_outliers(m: np.ndarray, b: np.ndarray) -> Tuple[np.ndarray, np.ndarra
     return m, b
 
 
-def group_lines(m: np.ndarray, b: np.ndarray):
+def group_lines(m: np.ndarray, b: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """
     Groups lines together based on their slope and intercept using the k-means
     algorithm with k = 4. Returns a list of the 4 lines' slope and intercept.
@@ -140,7 +144,7 @@ def group_lines(m: np.ndarray, b: np.ndarray):
 
 def add_line_to_plot(
     ax: plt.Axes, img: np.ndarray, m: float, b: float, color: str = "r", label: str = ""
-):
+) -> plt.Axes:
     """
     Add a straight line to an existing matplotlib plot.
 
@@ -271,7 +275,7 @@ def save_distances(filename: str, distances: pd.DataFrame, suffix: str) -> None:
     distances.to_csv(name, index=False)
 
 
-def main():
+def main() -> None:
     # Load image
     filename = "../images/a90l90__q002/a90l90__q002.jpg"
     img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
