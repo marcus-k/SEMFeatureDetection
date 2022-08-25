@@ -95,18 +95,24 @@ def remove_banner(
     ret, binary2 = cv2.threshold(img_final, thresh_final, 255, cv2.THRESH_BINARY)
 
     # Find the largest connected component
-    nlabels, labels, stats, centroids = cv2.connectedComponentsWithStats(~binary2)
-    ind_large = stats[1:, 4].argmax() + 1   # Index 0 is background
+    try:
+        nlabels, labels, stats, centroids = cv2.connectedComponentsWithStats(~binary2)
+        ind_large = stats[1:, 4].argmax() + 1   # Index 0 is background
 
-    # Assume the largest connected component is the banner
-    # (not very accurate, but the height is usually correct which is important)
-    x1, y1, xlen, ylen, area = stats[ind_large]
-    x2 = x1 + xlen
-    y2 = y1 + ylen
-    loc = ((x1, y1), (x2, y2))
+        # Assume the largest connected component is the banner
+        # (not very accurate, but the height is usually correct which is important)
+        x1, y1, xlen, ylen, area = stats[ind_large]
+        x2 = x1 + xlen
+        y2 = y1 + ylen
+        loc = ((x1, y1), (x2, y2))
 
-    # Crop out the banner
-    out = img.copy()[:y1, :]
+        # Crop out the banner
+        out = img.copy()[:y1, :]
+
+    except ValueError:
+        # If no connected components are found, return the original image
+        out = img.copy()
+        loc = None
 
     if _debug:
         return out, loc, (img_v, img_h, img_final, binary2)

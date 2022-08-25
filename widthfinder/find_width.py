@@ -59,16 +59,19 @@ def get_lines(
     output = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
 
     # Draw lines
-    a, b, c = lines.shape
-    for i in range(a):
-        cv2.line(
-            output,
-            (lines[i][0][0], lines[i][0][1]),
-            (lines[i][0][2], lines[i][0][3]),
-            (255, 0, 0),
-            1,
-            cv2.LINE_AA,
-        )
+    if lines is not None:
+        a, b, c = lines.shape
+        for i in range(a):
+            cv2.line(
+                output,
+                (lines[i][0][0], lines[i][0][1]),
+                (lines[i][0][2], lines[i][0][3]),
+                (255, 0, 0),
+                1,
+                cv2.LINE_AA,
+            )
+    else:
+        lines = np.array([])
 
     # Create return values
     ret = [lines, output]
@@ -106,6 +109,9 @@ def remove_outliers(m: np.ndarray, b: np.ndarray) -> Tuple[np.ndarray, np.ndarra
     Using the Interquartile Range, remove outliers from the slope and intercept.
 
     """
+    if len(m) == 0 or len(b) == 0:
+        return m, b
+    
     q1 = np.percentile(m, 25)
     q3 = np.percentile(m, 75)
     iqr = q3 - q1
@@ -122,9 +128,12 @@ def remove_outliers(m: np.ndarray, b: np.ndarray) -> Tuple[np.ndarray, np.ndarra
 def group_lines(m: np.ndarray, b: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """
     Groups lines together based on their slope and intercept using the k-means
-    algorithm with k = 4. Returns a list of the 4 lines' slope and intercept.
+    algorithm with k = 4. Returns a list of the four lines' slope and intercept.
 
     """
+    if len(m) < 4 or len(b) < 4:
+        return m, b
+    
     Z = np.vstack((m, b))
     Z = np.float32(Z).T
 
