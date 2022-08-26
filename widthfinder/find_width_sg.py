@@ -61,9 +61,20 @@ def update_output(
     fig_agg: FigureCanvasTkAgg, 
     output_elem: sg.Output, 
     m: np.ndarray, 
-    b: np.ndarray
+    b: np.ndarray,
+    metadata_filename: str = None
 ) -> None:
+
     distances = find_distances(m ,b)
+
+    # Scale the distances by the metadata scale value
+    if metadata_filename is not None:
+        try:
+            scale = get_pixel_size(metadata_filename)
+            distances["Distance (nm)"] = distances["Distance (px)"] * scale
+        except FileNotFoundError:
+            pass
+
     output_elem.update(tabulate(
         distances, 
         headers = "keys", 
@@ -72,7 +83,46 @@ def update_output(
     fig_agg.draw()
 
 
-def main():
+def swap_line_axes(line: plt.Axes) -> None:
+    """
+    Swap the axes of the line so that it is oriented correctly 
+    when transpose is selected.
+
+    """
+    xdata = line.get_xdata()
+    ydata = line.get_ydata()
+    line.set_xdata(ydata)
+    line.set_ydata(xdata)
+
+
+def save_distances(
+    filename: str, 
+    m: np.ndarray, 
+    b: np.ndarray, 
+    metadata_filename: str = None
+) -> None:
+    """
+    Given the slopes and intercepts, calculates distances and saves them to a file.
+    
+    """
+    distances = find_distances(m ,b)
+    if metadata_filename is not None:
+        try:
+            scale = get_pixel_size(metadata_filename)
+            distances["Distance (nm)"] = distances["Distance (px)"] * scale
+        except FileNotFoundError:
+            pass
+    distances.to_csv(filename, index=False)
+
+
+def save_image(filename: str, fig: Figure) -> None:
+    ax = fig.gca()
+    ax.set_axis_off()
+    fig.savefig(filename, bbox_inches='tight', transparent=True)
+    ax.set_axis_on()
+
+
+def main() -> None:
     filename = "../images/a90l90__q002/a90l90__q002.jpg"
 
     # Define window
@@ -88,6 +138,9 @@ def main():
                 [sg.Text("Source Image:", font="Helvetica 10")],
                 [sg.Input(key="input_image_filename", expand_x=True)],
                 [sg.FileBrowse(key="input_image", target=(-1, 0))],
+                [sg.Text("Metadata (blank -> same as source):", font="Helvetica 10")],
+                [sg.Input(key="metadata_filename", expand_x=True)],
+                [sg.FileBrowse(key="metadata", target=(-1, 0))],
                 [
                     sg.Text("Banner Color:", pad=((0, 0), 3), font='Helvetica 10'),
                     sg.Combo(["White", "Black", "None"], key="banner", default_value="White", readonly=True, enable_events=True),
@@ -100,7 +153,12 @@ def main():
         [sg.Button("Calculate", key="calculate", font="Helvetica 14")],
         [sg.Text("Output:", pad=((0, 0), 3), font='Helvetica 14')],
         [sg.Text("", key="output", font="Consolas 12", background_color="white", text_color="black", expand_x=True)],
-        
+        [
+            sg.Input(key="save_image", enable_events=True, visible=False), 
+            sg.FileSaveAs("Save Image"),
+            sg.Input(key="save_output", enable_events=True, visible=False), 
+            sg.FileSaveAs("Save to CSV", default_extension=".csv", file_types=(("CSV", "*.csv"),)),
+        ],
     ]
     layout = [[
         sg.Column(col1, element_justification="center"),
@@ -137,26 +195,36 @@ def main():
             # Display image
             filename = values["input_image_filename"]
             img = read_image(filename, banner=banner_elem.get())
-            if transpose_elem.get():
-                img = img.T
             ax.cla()
-            ax_im = ax.imshow(img, cmap="gray")
+            ax.imshow(img, cmap="gray")
+
+            # Get metadata
+            metadata_filename = values["metadata_filename"]
+            if metadata_filename == "":
+                metadata_filename = filename
 
             # Add beam edge lines to the plot
-            m, b = find_lines(img)
+            if transpose_elem.get():
+                m, b = find_lines(img.T)
+            else:
+                m, b = find_lines(img)
+            
             ax_lines = []
             for i in range(len(m)):
                 c = colors[i]
                 label = i
                 (l,) = add_line_to_plot(ax, img, m[i], b[i], c, label)
+                if transpose_elem.get():
+                    swap_line_axes(l)
                 ax_lines.append(l)
             ax.legend()
 
             # Update output
-            update_output(fig_agg, output_elem, m, b)
+            update_output(fig_agg, output_elem, m, b, metadata_filename)
             active_plot = True
+            fig_agg.draw()
 
-            # Enable buttons
+            # Enable/Disable buttons if lines are present
             if len(m) >= 4 and len(b) >= 4:
                 for i in range(4):
                     window[f"increase_b{i}"].update(disabled=False)
@@ -170,16 +238,47 @@ def main():
         if active_plot and "increase_b" in event:
             i = int(event[-1])
             b[i] += 1
-            ax_lines[i].set_ydata(m[i] * ax_lines[i].get_xdata() + b[i])
+            if transpose_elem.get():
+                ax_lines[i].set_xdata(ax_lines[i].get_xdata() + 1)
+            else:
+                ax_lines[i].set_ydata(ax_lines[i].get_ydata() + 1)
             fig_agg.draw()
-            update_output(fig_agg, output_elem, m, b)
+
+            metadata_filename = values["metadata_filename"]
+            if metadata_filename == "":
+                metadata_filename = filename
+            update_output(fig_agg, output_elem, m, b, values["metadata_filename"])
 
         if active_plot and "decrease_b" in event:
             i = int(event[-1])
             b[i] -= 1
-            ax_lines[i].set_ydata(m[i] * ax_lines[i].get_xdata() + b[i])
+            if transpose_elem.get():
+                ax_lines[i].set_xdata(ax_lines[i].get_xdata() - 1)
+            else:
+                ax_lines[i].set_ydata(ax_lines[i].get_ydata() - 1)
             fig_agg.draw()
-            update_output(fig_agg, output_elem, m, b)
+
+            metadata_filename = values["metadata_filename"]
+            if metadata_filename == "":
+                metadata_filename = filename
+            update_output(fig_agg, output_elem, m, b, values["metadata_filename"])
+
+        # Save image
+        if event == "save_image":
+            filename = values["save_image"]
+            if filename:
+                save_image(filename, fig)
+
+        # Save output
+        if event == "save_output":
+            filename = values["save_output"]
+
+            metadata_filename = values["metadata_filename"]
+            if metadata_filename == "":
+                metadata_filename = filename
+
+            if filename:
+                save_distances(filename, m, b, metadata_filename)
 
     window.close()
 
