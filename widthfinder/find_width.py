@@ -19,7 +19,7 @@ from itertools import combinations
 
 def get_lines(
     img: np.ndarray, 
-    dir: str = "horizontal", 
+    orient: str = "horizontal", 
     return_pre: bool = False, 
     return_edges: bool = False
 ) -> Tuple[np.ndarray, ...]:
@@ -30,7 +30,12 @@ def get_lines(
     """
     # Exaggerate long straight lines
     linek = np.zeros((15, 15), dtype=np.uint8)
-    linek[linek.shape[0] // 2, :] = 1
+
+    if orient == "horizontal":
+        linek[linek.shape[0] // 2, :] = 1
+    elif orient == "vertical":
+        linek[:, linek.shape[0] // 2] = 1
+
     straight = cv2.morphologyEx(img, cv2.MORPH_OPEN, linek, iterations=3)
 
     # Attempt denoising

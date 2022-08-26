@@ -27,7 +27,7 @@ conda create -n ellipse python=3.8
 ``` 
 Next, install the required packages
 ```
-conda install -n ellipse opencv=4.5.5 numpy pandas matplotlib tifffile ipykernel ipympl
+conda install -n ellipse opencv=4.5.5 numpy pandas matplotlib tifffile ipykernel ipympl pysimplegui tabulate 
 ```
 This assumes Jupyter Notebooks/Lab is already installed (which it is in the default
 Anaconda setup).
