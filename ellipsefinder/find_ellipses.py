@@ -92,6 +92,10 @@ def get_pixel_size(filename: str, suffix: str = None) -> float:
         path = Path(filename)
         filename = str(path.parent / path.stem) + suffix
 
+    # Check if file exists
+    if not Path(filename).exists():
+        raise FileNotFoundError(f"File not found when getting pixel size: {filename}")
+
     # See if pixel size is in Tiff file metadata (if it is a Tiff file)
     try:
         with tifffile.TiffFile(filename) as tif:
@@ -106,11 +110,14 @@ def get_pixel_size(filename: str, suffix: str = None) -> float:
 
     # See if pixel size is anywhere is the file (assuming it's text readable)
     with open(filename) as f:
-        for line in f:
-            if re.search("pixel ?size ?= ?", line, re.IGNORECASE):
-                # Pixel size in nm/px
-                pixel_size = float(line.split("=")[1])
-                return pixel_size
+        try:
+            for line in f:
+                if re.search("pixel ?size ?= ?", line, re.IGNORECASE):
+                    # Pixel size in nm/px
+                    pixel_size = float(line.split("=")[1])
+                    return pixel_size
+        except UnicodeDecodeError:
+            pass
 
     return 1.0
 
