@@ -123,8 +123,6 @@ def save_image(filename: str, fig: Figure) -> None:
 
 
 def main() -> None:
-    filename = "../images/a90l90__q002/a90l90__q002.jpg"
-
     # Define window
     col1 = [
         [sg.Canvas(size=(1280, 720), key="canvas")],
