@@ -8,8 +8,13 @@ be various updates as I understand and discover different things.
 
 ## Table of Contents
 * [Installation](#installation)
+  * [Installing Python Packages](#installing-python-packages)
+  * [Installing AAMED](#installing-aamed)
 * [Usage](#usage)
+  * [Ellipse Finder](#ellipse-finder)
+  * [Width Finder](#width-finder)
 * [Creating Ground Truth Images](#creating-ground-truth-images)
+  * [ImageJ GT Steps](./ImageJ%20GT%20Steps.md)
 * [Development](#development)
 
 ## Installation
@@ -54,6 +59,8 @@ be shown, but the code can be used normally without access to the AAMED algorith
 
 ## Usage
 
+### Ellipse Finder
+
 The main code is in [`./ellipsefinder`](./ellipsefinder/) and it consists of the main 
 [`find_ellipses.py`](./ellipsefinder/find_ellipses.py) file and the 
 [`methods`](./ellipsefinder/methods/) folder. In the 
@@ -72,19 +79,54 @@ up any filtering that we want done on the output results. Next, run our selected
 detection algorithm in the standard way seen in the examples. Finally, we can calculate
 some things with results and save all the output image.
 
+### Width Finder
+
+For finding the widths, there are two related files. 
+[`find_width.py`](./widthfinder/find_width.py) has the functions which are required for 
+the algorithm. The main function goes through the required steps in order. For ease of 
+use, [`find_width_sg.py`](./widthfinder/find_width_sg.py) attempts to wrap the 
+functionality of in a [PySimpleGUI](https://github.com/PySimpleGUI/PySimpleGUI) GUI 
+interface. Using this may be preferable, it is still very much in an alpha state.
+
+The main procedure at the moment is as follows:
+- Remove the banner from the image
+- Preprocess and use OpenCV's HoughLinesP to obtain lines segments of the beam edges
+- Categorize the lines by their slope and intercept
+- Remove any obvious outliers via the interquartile range in the slopes
+- Group and find the four main edges the define the beam via k-means where k=4
+- Manually adjust the intercepts of the lines to better fit the beam
+
+There can still be many improvements made, in particular to the outlier removal,
+manual adjustment of the lines, and grouping via k-means, but this algorithm tended 
+to work well for "nice" images.
+
+The main unsolved issue at the moment with the width finding algorithm is that it sorts 
+lines by their slopes and intercepts. While this is usually fine, images whose nanobeam 
+is vertically aligned cannot be categorized since these properties are undefined. For a 
+simple fix, one can simply manually crop out the banner and rotate the image so the 
+algorithm can proceed. Alternatively, in the GUI version, there is a transpose button 
+that will transpose the image in the backend for use the algorithm. The resultant lines 
+are then transposed back so they can be drawn correctly on the image. Since the only 
+important point is the distance between the lines, transposes should not affect this in 
+any way.
+
 ## Creating Ground Truth Images
 
 To compare the accuracy of the ellipse finding methods, and for possible use in future 
 machine learning methods, ground truth images/masks were created using 
 [ImageJ](https://imagej.net/software/fiji/downloads). For the details in creating the
 selection regions of interest (ROIs) and masks, see the 
-[ImageJ GT Steps.md](./ImageJ%20GT%20Steps.md) file.
+[ImageJ GT Steps.md](./ImageJ%20GT%20Steps.md) file which goes through the steps.
 
 Three files are created from this method: the ground truth mask, the ROI zip file, and 
 the CSV file of the selection regions. I tested out both extraction the ellipses from 
 the mask and creating the ellipse from the CSV selection region data. Both are okay, 
 using [`./ellipsefinder/format_roi_csv.py`](./ellipsefinder/format_roi_csv.py) with the 
 CSV data is probably better.
+
+These images were mainly used as points of reference when testing the binarization 
+methods for each algorithm, but they have great potential to be used as training data 
+for ML models down the line.
 
 ## Development
 
@@ -119,3 +161,15 @@ adding a connected components analysis. At the moment, it is assumed that the ba
 is at the bottom of the image and I simply crop the height of the largest connected
 component off the bottom. For the data I had, this was sufficient but this may need
 to change for banners in different locations.
+
+### Adding Ellipse Finder to GUI
+
+It was only near the end of the project before I got a chance to add a graphical 
+interface to complement the code. The current width finder GUI is still quite buggy and 
+there are likely many edge cases that have yet to be discovered. As well, the ellipse 
+finder does not have a GUI yet and it would be good to incorporate this together with 
+the width finder GUI. This would also allow the many options of each algorithm to be 
+easily changed and dynamically updated. Similar to the structure of the ellipse finder, 
+it may be good to have an abstract GUI to inherit from such that each algorithm can 
+have its own set of options to adjust. This however, may also require programming in 
+the edge cases for each state the GUI may be in which is often time-consuming as well.
