@@ -86,7 +86,7 @@ For finding the widths, there are two related files.
 the algorithm. The main function goes through the required steps in order. For ease of 
 use, [`find_width_sg.py`](./widthfinder/find_width_sg.py) attempts to wrap the 
 functionality of in a [PySimpleGUI](https://github.com/PySimpleGUI/PySimpleGUI) GUI 
-interface. Using this may be preferable, it is still very much in an alpha state.
+interface. Using this may be preferable, but it is still very much in an alpha state.
 
 The main procedure at the moment is as follows:
 - Remove the banner from the image
@@ -96,7 +96,7 @@ The main procedure at the moment is as follows:
 - Group and find the four main edges the define the beam via k-means where k=4
 - Manually adjust the intercepts of the lines to better fit the beam
 
-There can still be many improvements made, in particular to the outlier removal,
+There are still many improvements to be made, in particular to the outlier removal,
 manual adjustment of the lines, and grouping via k-means, but this algorithm tended 
 to work well for "nice" images.
 
