@@ -7,6 +7,7 @@ This will mainly be an archival tool of the progress I make on this. Commits wil
 be various updates as I understand and discover different things. 
 
 ## Table of Contents
+* [Goals](#goals)
 * [Installation](#installation)
   * [Installing Python Packages](#installing-python-packages)
   * [Installing AAMED](#installing-aamed)
@@ -15,7 +16,16 @@ be various updates as I understand and discover different things.
   * [Width Finder](#width-finder)
 * [Creating Ground Truth Images](#creating-ground-truth-images)
   * [ImageJ GT Steps](./ImageJ%20GT%20Steps.md)
-* [Development](#development)
+* [Development](#future-development)
+* [Wrap-Up](#wrap-up)
+
+## Goals
+
+The idea behind this project was to try and create a general purpose application
+which can detect and extract various features of SEM images of nanobeams. In particular,
+the sizes of the holes and width of the beam was of interest. To my knowledge, there
+was not standardized open source methods to achieve this, so I wanted to make easily 
+expandable and implementable code for others to use. 
 
 ## Installation
 
@@ -43,6 +53,11 @@ the AAMED algorithm for that version if the functionality is desired. See the ne
 section for details.
 
 ### Installing AAMED
+
+[AAMED](https://github.com/Li-Zhaoxi/AAMED) (Arc Adjacency Matrix Based Fast Ellipse 
+Detection) was a key algorithm used when trying to find more sophisticated ellipse 
+finding algorithm. It gave a good point of comparison and for some images worked 
+significantly better than brute force attempts.
 
 In order to use the AAMED algorithm, the AAMED binaries should be downloaded and placed 
 into the [`./ellipsefinder/methods`](./ellipsefinder/methods/) folder. The binaries are 
@@ -135,9 +150,9 @@ These images were mainly used as points of reference when testing the binarizati
 methods for each algorithm, but they have great potential to be used as training data 
 for ML models down the line.
 
-## Development
+## Future Development
 
-### Future Methods
+### More Algorithms
 
 I tried to make adding new future methods relatively easy. All the current ellipse
 finder algorithms implement the abstract base class (ABC) 
@@ -180,3 +195,21 @@ easily changed and dynamically updated. Similar to the structure of the ellipse 
 it may be good to have an abstract GUI to inherit from such that each algorithm can 
 have its own set of options to adjust. This however, may also require programming in 
 the edge cases for each state the GUI may be in which is often time-consuming as well.
+
+### Width Finder Limitations
+
+As mentioned in the [Width Finder](#width-finder) section, the main limitation for this
+algorithm is the reliance on calculating the slope and y-intercept to remove outliers
+and find the widths. Certainly other methods exist to solve this problem but I have not
+had the time to explore all the different avenues here. Switching to line segments may
+work better for distances, but then outlier detection becomes harder to manage.
+Exploring different possibilities would be very interesting.
+
+## Wrap-Up
+
+This work so far is a great exploratory effort in creating a general purpose tool for
+detecting and extracting features in SEM nanobeam images. An expandable methods for 
+measuring hole diameters as well as a graphical interface for finding the width was
+created here. Going forwards, adding more algorithms, refining the work, and unifying
+both sections together in a collective GUI would allow for much better efficiency
+and productivity.
