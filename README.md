@@ -79,6 +79,10 @@ up any filtering that we want done on the output results. Next, run our selected
 detection algorithm in the standard way seen in the examples. Finally, we can calculate
 some things with results and save all the output image.
 
+Below is an example of the AAMED algorithm used on one of the nanobeams.
+
+![](screenshots/example1.png)
+
 ### Width Finder
 
 For finding the widths, there are two related files. 
@@ -87,6 +91,9 @@ the algorithm. The main function goes through the required steps in order. For e
 use, [`find_width_sg.py`](./widthfinder/find_width_sg.py) attempts to wrap the 
 functionality of in a [PySimpleGUI](https://github.com/PySimpleGUI/PySimpleGUI) GUI 
 interface. Using this may be preferable, but it is still very much in an alpha state.
+A screenshot of the interface is below.
+
+![](screenshots/example2.png)
 
 The main procedure at the moment is as follows:
 - Remove the banner from the image
