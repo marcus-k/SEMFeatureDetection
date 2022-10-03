@@ -245,7 +245,7 @@ def main() -> None:
             metadata_filename = values["metadata_filename"]
             if metadata_filename == "":
                 metadata_filename = filename
-            update_output(fig_agg, output_elem, m, b, values["metadata_filename"])
+            update_output(fig_agg, output_elem, m, b, metadata_filename)
 
         if active_plot and "decrease_b" in event:
             i = int(event[-1])
@@ -259,7 +259,7 @@ def main() -> None:
             metadata_filename = values["metadata_filename"]
             if metadata_filename == "":
                 metadata_filename = filename
-            update_output(fig_agg, output_elem, m, b, values["metadata_filename"])
+            update_output(fig_agg, output_elem, m, b, metadata_filename)
 
         # Save image
         if event == "save_image":
